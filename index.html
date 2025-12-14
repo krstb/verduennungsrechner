@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verdünnungsrechner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        input, select {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 0.8rem 0.75rem;
+            transition: all 0.2s ease-in-out;
+            width: 100%;
+            background-color: #f8fafc;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+            background-color: #ffffff;
+        }
+        .result-box {
+            background-color: #e0e7ff;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            color: #3b82f6;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 220px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 0.375rem;
+            padding: 0.5rem;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -110px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.875rem;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-start justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-2xl mx-auto">
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Verdünnungsrechner</h1>
+            <p class="text-gray-600">Berechne die Mengen für deine Verdünnung.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Ausgangslösung -->
+            <div class="card">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Ausgangslösung</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label for="substance-select" class="block text-sm font-medium text-gray-700 mb-1">Stoff</label>
+                        <select id="substance-select">
+                            <option value="default">Wählen Sie einen Stoff</option>
+                            <option value="aceton">Aceton</option>
+                            <option value="ammoniak">Ammoniak</option>
+                            <option value="ethanol">Ethanol</option>
+                            <option value="glycerin">Glycerin</option>
+                            <option value="isopropanol">Isopropanol</option>
+                            <option value="methanol">Methanol</option>
+                            <option value="salzsaeure">Salzsäure</option>
+                            <option value="schwefelsaeure">Schwefelsäure</option>
+                            <option value="wasser">Wasser</option>
+                            <option value="other">Andere (manuelle Eingabe)</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-5 gap-4">
+                        <div class="col-span-2">
+                            <label for="initial-concentration" class="block text-sm font-medium text-gray-700 mb-1">Konzentration</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="text" inputmode="decimal" id="initial-concentration" placeholder="z.B. 99" class="flex-grow">
+                                <span class="text-gray-500">%</span>
+                            </div>
+                        </div>
+                        <div class="col-span-3">
+                            <label for="initial-density" class="block text-sm font-medium text-gray-700 mb-1">Dichte
+                                <span class="tooltip">ⓘ
+                                    <span class="tooltiptext">Die Dichte wird für gängige Stoffe automatisch ausgefüllt.</span>
+                                </span>
+                            </label>
+                            <div class="flex items-center space-x-2">
+                                <input type="text" inputmode="decimal" id="initial-density" placeholder="z.B. 0,786" class="flex-grow">
+                                <span class="text-gray-500 text-sm">g/ml</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ziellösung -->
+            <div class="card">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Ziellösung</h2>
+                <div class="space-y-4">
+                    <div class="grid grid-cols-5 gap-4">
+                        <div class="col-span-2">
+                            <label for="target-concentration" class="block text-sm font-medium text-gray-700 mb-1">Konzentration</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="text" inputmode="decimal" id="target-concentration" placeholder="z.B. 70" class="flex-grow">
+                                <span class="text-gray-500">%</span>
+                            </div>
+                        </div>
+                        <div class="col-span-3">
+                            <label for="final-volume" class="block text-sm font-medium text-gray-700 mb-1">Gesamtmenge</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="text" inputmode="decimal" id="final-volume" placeholder="z.B. 500" class="flex-grow">
+                                <select id="final-volume-unit" class="w-auto">
+                                    <option value="ml" selected>ml</option>
+                                    <option value="l">l</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ergebnis -->
+        <div id="result-container" class="result-box hidden">
+            <h3 class="text-lg font-semibold mb-2 text-indigo-800">Ergebnis</h3>
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-indigo-200">
+                        <th class="text-left font-medium text-gray-600 py-2">Komponente</th>
+                        <th class="text-right font-medium text-gray-600 py-2">Menge</th>
+                    </tr>
+                </thead>
+                <tbody id="result-table-body" class="divide-y divide-indigo-100">
+                </tbody>
+            </table>
+            <p id="result-note" class="text-xs text-gray-600 mt-3"></p>
+        </div>
+
+        <div id="error-message" class="text-center text-red-600 mt-4 hidden p-3 bg-red-100 rounded-lg">
+            Bitte fülle alle Felder korrekt aus. Die Anfangskonzentration muss größer sein als die Zielkonzentration.
+        </div>
+    </div>
+
+    <script>
+        const densities = {
+            "aceton": 0.791, "ammoniak": 0.91, "ethanol": 0.789, "glycerin": 1.261,
+            "isopropanol": 0.786, "methanol": 0.791, "salzsaeure": 1.18,
+            "schwefelsaeure": 1.84, "wasser": 1.0
+        };
+
+        function parseGermanFloat(str) {
+            if (typeof str !== 'string' || str.trim() === '') return NaN;
+            return parseFloat(str.replace(',', '.'));
+        }
+
+        function formatToGermanString(num, decimals) {
+            if (typeof num !== 'number' || isNaN(num)) return '';
+            return num.toFixed(decimals).replace('.', ',');
+        }
+
+        function autoFillDensityFromSelect() {
+            const substanceSelect = document.getElementById('substance-select');
+            const densityInput = document.getElementById('initial-density');
+            const selectedValue = substanceSelect.value;
+            
+            if (selectedValue in densities) {
+                densityInput.value = formatToGermanString(densities[selectedValue], 3);
+                densityInput.disabled = true;
+            } else if (selectedValue === 'other') {
+                densityInput.value = '';
+                densityInput.disabled = false;
+                densityInput.focus();
+            } else {
+                densityInput.value = '';
+                densityInput.disabled = false;
+            }
+            calculateSolution();
+        }
+
+        function formatVolume(volumeMl) {
+            if (isNaN(volumeMl)) return '...';
+            if (volumeMl >= 1000) {
+                return formatToGermanString(volumeMl / 1000, 2) + ' l';
+            } else {
+                return formatToGermanString(volumeMl, 2) + ' ml';
+            }
+        }
+        
+        function formatInputOnBlur(event, decimals) {
+            const input = event.target;
+            const value = parseGermanFloat(input.value);
+            if (!isNaN(value)) {
+                input.value = formatToGermanString(value, decimals);
+            }
+        }
+
+        function calculateSolution() {
+            const initialConcentration = parseGermanFloat(document.getElementById('initial-concentration').value);
+            const initialDensity = parseGermanFloat(document.getElementById('initial-density').value);
+            const targetConcentration = parseGermanFloat(document.getElementById('target-concentration').value);
+            let finalValue = parseGermanFloat(document.getElementById('final-volume').value);
+            const finalUnit = document.getElementById('final-volume-unit').value;
+
+            if (finalUnit === 'l') {
+                finalValue *= 1000;
+            }
+
+            const resultContainer = document.getElementById('result-container');
+            const resultTableBody = document.getElementById('result-table-body');
+            const resultNote = document.getElementById('result-note');
+            const errorMessage = document.getElementById('error-message');
+            const substanceSelect = document.getElementById('substance-select');
+            const substanceName = substanceSelect.value === 'default' || substanceSelect.value === 'other' ? 'Ausgangslösung' : substanceSelect.options[substanceSelect.selectedIndex].text;
+
+            resultTableBody.innerHTML = '';
+            resultNote.innerHTML = '';
+            resultContainer.classList.add('hidden');
+            errorMessage.classList.add('hidden');
+
+            if (isNaN(initialConcentration) || isNaN(initialDensity) || isNaN(targetConcentration) || isNaN(finalValue) || initialConcentration <= 0 || initialConcentration > 100 || targetConcentration < 0 || targetConcentration >= 100 || finalValue <= 0 || initialConcentration <= targetConcentration) {
+                if (!isNaN(initialConcentration) && !isNaN(targetConcentration) && initialConcentration > 0 && targetConcentration >= 0 && finalValue > 0) {
+                    errorMessage.classList.remove('hidden');
+                }
+                return;
+            }
+
+            const initialNeededVolume = (finalValue * targetConcentration) / initialConcentration;
+            const diluentNeededVolume = finalValue - initialNeededVolume;
+            const initialNeededMass = initialNeededVolume * initialDensity;
+            const diluentNeededMass = diluentNeededVolume * 1.0;
+
+            const formattedInitialVolume = formatVolume(initialNeededVolume);
+            const formattedDiluentVolume = formatVolume(diluentNeededVolume);
+
+            const row1 = document.createElement('tr');
+            row1.innerHTML = `<td class="py-2">${substanceName}</td><td class="text-right font-semibold py-2">${formatToGermanString(initialNeededMass, 2)} g <span class="text-gray-500 font-normal">(${formattedInitialVolume})</span></td>`;
+            const row2 = document.createElement('tr');
+            row2.innerHTML = `<td class="py-2">Wasser</td><td class="text-right font-semibold py-2">${formatToGermanString(diluentNeededMass, 2)} g <span class="text-gray-500 font-normal">(${formattedDiluentVolume})</span></td>`;
+            
+            resultTableBody.appendChild(row1);
+            resultTableBody.appendChild(row2);
+
+            resultNote.innerHTML = 'Hinweis: Berechnung basiert auf additiven Volumina. In der Praxis können Abweichungen auftreten.';
+            resultContainer.classList.remove('hidden');
+        }
+
+        const inputsToCalculate = ['initial-concentration', 'initial-density', 'target-concentration', 'final-volume'];
+        inputsToCalculate.forEach(id => document.getElementById(id).addEventListener('input', calculateSolution));
+        
+        document.getElementById('final-volume-unit').addEventListener('change', calculateSolution);
+        document.getElementById('substance-select').addEventListener('change', autoFillDensityFromSelect);
+
+        document.getElementById('initial-concentration').addEventListener('blur', (e) => formatInputOnBlur(e, 2));
+        document.getElementById('initial-density').addEventListener('blur', (e) => formatInputOnBlur(e, 3));
+        document.getElementById('target-concentration').addEventListener('blur', (e) => formatInputOnBlur(e, 2));
+        document.getElementById('final-volume').addEventListener('blur', (e) => formatInputOnBlur(e, 2));
+    </script>
+</body>
+</html>
+

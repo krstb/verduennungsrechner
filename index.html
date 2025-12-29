@@ -26,13 +26,17 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-        /* Fix für PWA-Ränder und Hintergrundfarbe */
-        html, body { 
-            background-color: #3289D1 !important; 
-            overscroll-behavior: none; 
-            height: 100%;
-            margin: 0;
-            padding: 0;
+       /* Fix für PWA-Ränder */
+html, body { 
+    background-color: #3289D1 !important; 
+    overscroll-behavior: none; /* Verhindert das Wackeln/Bounce */
+    height: 100%;
+    overflow: hidden; /* Verhindert das Scrollen der gesamten Seite */
+}
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Stellt sicher, dass der Inhalt nicht scrollt, wenn er auf den Bildschirm passt */
+            overflow-y: auto; 
         }
 
         body {
@@ -315,3 +319,4 @@
     </script>
 </body>
 </html>
+

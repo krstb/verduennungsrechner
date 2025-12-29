@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verdünnungsrechner</title>
 
-<link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#000000">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3289D1">
     <meta name="color-scheme" content="light">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -24,19 +24,22 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-
-/* Fix für PWA-Ränder */
-html, body { 
-    background-color: #3289D1 !important; 
-    overscroll-behavior: none; /* Verhindert das Wackeln/Bounce */
-    height: 100%;
-    overflow: hidden; /* Verhindert das Scrollen der gesamten Seite */
-}
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        /* Fix für PWA-Ränder und Hintergrundfarbe */
+        html, body { 
+            background-color: #3289D1 !important; 
+            overscroll-behavior: none; 
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8;
+            /* overflow: hidden;  <-- Vorsicht: Falls der Inhalt auf kleinen Handys länger ist als der Bildschirm, kann man nicht scrollen. Bei Bedarf wieder aktivieren. */
         }
+
         .card {
             background-color: #ffffff;
             border-radius: 1rem;
@@ -44,6 +47,7 @@ html, body {
             padding: 1.25rem;
             margin-bottom: 1rem;
         }
+
         input, select {
             border: 1px solid #e2e8f0;
             border-radius: 0.5rem;
@@ -52,24 +56,28 @@ html, body {
             width: 100%;
             background-color: #f8fafc;
         }
+
         input:focus, select:focus {
             outline: none;
             border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
             background-color: #ffffff;
         }
+
         .result-box {
             background-color: #e0e7ff;
             border-radius: 1rem;
             padding: 1.25rem;
             margin-top: 1.5rem;
         }
+
         .tooltip {
             position: relative;
             display: inline-block;
             cursor: pointer;
             color: #3b82f6;
         }
+
         .tooltip .tooltiptext {
             visibility: hidden;
             width: 220px;
@@ -87,22 +95,22 @@ html, body {
             transition: opacity 0.3s;
             font-size: 0.875rem;
         }
+
         .tooltip:hover .tooltiptext {
             visibility: visible;
             opacity: 1;
         }
     </style>
 </head>
-<body class="bg-gray-100 flex items-start justify-center min-h-screen p-4">
+<body class="flex items-start justify-center min-h-screen p-4">
 
     <div class="w-full max-w-2xl mx-auto">
         <div class="text-center mb-6">
-            <h1 class="text-3xl font-bold text-gray-800">Verdünnungsrechner</h1>
-            <p class="text-gray-600">Berechne die Mengen für deine Verdünnung.</p>
+            <h1 class="text-3xl font-bold text-white mb-2">Verdünnungsrechner</h1>
+            <p class="text-blue-100">Berechne die Mengen für deine Verdünnung.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Ausgangslösung -->
             <div class="card">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">Ausgangslösung</h2>
                 <div class="space-y-4">
@@ -145,7 +153,6 @@ html, body {
                 </div>
             </div>
 
-            <!-- Ziellösung -->
             <div class="card">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">Ziellösung</h2>
                 <div class="space-y-4">
@@ -172,7 +179,6 @@ html, body {
             </div>
         </div>
 
-        <!-- Ergebnis -->
         <div id="result-container" class="result-box hidden">
             <h3 class="text-lg font-semibold mb-2 text-indigo-800">Ergebnis</h3>
             <table class="w-full text-sm">
@@ -309,7 +315,3 @@ html, body {
     </script>
 </body>
 </html>
-
-
-
-

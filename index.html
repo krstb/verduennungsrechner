@@ -97,7 +97,7 @@
     <div class="w-full max-w-lg mx-auto">
         <div class="text-center mb-6">
             <h1 class="text-3xl font-bold text-white">Verdünnungsrechner</h1>
-            <p class="text-white">Berechne die Mengen für deine Verdünnung.</p>
+            <p class="text-white">Berechnet die Mengen Verdünnungen</p>
         </div>
 
         <div class="grid grid-cols-1 gap-4">
@@ -110,7 +110,6 @@
                         <select id="substance-select">
                             <option value="default">Wählen Sie einen Stoff</option>
                             <option value="aceton">Aceton</option>
-                            <option value="ammoniak">Ammoniak</option>
                             <option value="ethanol">Ethanol</option>
                             <option value="glycerin">Glycerin</option>
                             <option value="isopropanol">Isopropanol</option>
@@ -194,7 +193,7 @@
 
     <script>
         const densities = {
-            "aceton": 0.791, "ammoniak": 0.91, "ethanol": 0.789, "glycerin": 1.261,
+            "aceton": 0.791, "ethanol": 0.789, "glycerin": 1.261,
             "isopropanol": 0.786, "methanol": 0.791, "salzsaeure": 1.18,
             "schwefelsaeure": 1.84, "wasser": 1.0
         };
@@ -331,8 +330,7 @@
             
             resultTableBody.appendChild(row1);
             resultTableBody.appendChild(row2);
-
-            resultNote.innerHTML = 'Hinweis: Berechnung basiert auf additiven Volumina. In der Praxis können Abweichungen auftreten.';
+            
             resultContainer.classList.remove('hidden');
         }
 

@@ -125,7 +125,7 @@
                         <div class="col-span-2">
                             <label for="initial-concentration" class="block text-sm font-medium text-gray-700 mb-1">Konzentration</label>
                             <div class="flex items-center space-x-2">
-                                <input type="text" inputmode="decimal" id="initial-concentration" placeholder="z.B. 99" class="flex-grow">
+                                <input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="initial-concentration" placeholder="z.B. 99" class="flex-grow">
                                 <span class="text-gray-500">%</span>
                             </div>
                         </div>
@@ -136,7 +136,7 @@
                                 </span>
                             </label>
                             <div class="flex items-center space-x-2">
-                                <input type="text" inputmode="decimal" id="initial-density" placeholder="z.B. 0,786" class="flex-grow">
+                                <input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="initial-density" placeholder="z.B. 0,786" class="flex-grow">
                                 <span class="text-gray-500 text-sm">g/ml</span>
                             </div>
                         </div>
@@ -152,14 +152,14 @@
                         <div class="col-span-2">
                             <label for="target-concentration" class="block text-sm font-medium text-gray-700 mb-1">Konzentration</label>
                             <div class="flex items-center space-x-2">
-                                <input type="text" inputmode="decimal" id="target-concentration" placeholder="z.B. 70" class="flex-grow">
+                                <input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="target-concentration" placeholder="z.B. 70" class="flex-grow">
                                 <span class="text-gray-500">%</span>
                             </div>
                         </div>
                         <div class="col-span-3">
                             <label for="final-volume" class="block text-sm font-medium text-gray-700 mb-1">Gesamtmenge</label>
                             <div class="flex items-center space-x-2">
-                                <input type="text" inputmode="decimal" id="final-volume" placeholder="z.B. 500" class="flex-grow">
+                                <input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="final-volume" placeholder="z.B. 500" class="flex-grow">
                                 <select id="final-volume-unit" class="w-auto">
                                     <option value="ml" selected>ml</option>
                                     <option value="l">l</option>
@@ -201,12 +201,53 @@
 
         function parseGermanFloat(str) {
             if (typeof str !== 'string' || str.trim() === '') return NaN;
-            return parseFloat(str.replace(',', '.'));
+            return parseFloat(str.replace(/\./g, '').replace(',', '.'));
         }
 
         function formatToGermanString(num, decimals) {
             if (typeof num !== 'number' || isNaN(num)) return '';
-            return num.toFixed(decimals).replace('.', ',');
+            return new Intl.NumberFormat('de-DE', {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            }).format(num);
+        }
+
+        function handleInput(e) {
+            let cursorPosition = e.target.selectionStart;
+            let originalValue = e.target.value;
+
+            // 1. Punkte in Kommas umwandeln
+            let normalizedValue = originalValue.replace(/\./g, ',');
+
+            // 2. Nur Ziffern und Kommas zulassen
+            let cleanValue = normalizedValue.replace(/[^0-9,]/g, '');
+
+            // 3. Nur maximal ein Komma erlauben
+            const parts = cleanValue.split(',');
+            if (parts.length > 2) {
+                cleanValue = parts[0] + ',' + parts.slice(1).join('');
+            }
+
+            e.target.value = cleanValue;
+
+            // 4. Cursor-Position anpassen
+            if (originalValue !== cleanValue) { 
+                cursorPosition = cursorPosition + (cleanValue.length - originalValue.length); 
+            }
+            try {
+                e.target.setSelectionRange(cursorPosition, cursorPosition);
+            } catch (err) {
+                // Ignorieren
+            }
+
+            calculateSolution();
+        }
+
+        function handleFocus(e) {
+            const rawValue = e.target.value.replace(/\./g, '');
+            if (rawValue) {
+                e.target.value = rawValue;
+            }
         }
 
         function autoFillDensityFromSelect() {
@@ -296,7 +337,11 @@
         }
 
         const inputsToCalculate = ['initial-concentration', 'initial-density', 'target-concentration', 'final-volume'];
-        inputsToCalculate.forEach(id => document.getElementById(id).addEventListener('input', calculateSolution));
+        inputsToCalculate.forEach(id => {
+            const el = document.getElementById(id);
+            el.addEventListener('input', handleInput);
+            el.addEventListener('focus', handleFocus);
+        });
         
         document.getElementById('final-volume-unit').addEventListener('change', calculateSolution);
         document.getElementById('substance-select').addEventListener('change', autoFillDensityFromSelect);
@@ -308,18 +353,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

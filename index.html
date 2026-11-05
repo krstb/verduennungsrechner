@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Verdünnungsrechner</title>
-
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -13,7 +12,6 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icon-192.png">
-
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -23,7 +21,6 @@
         }
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <style>
         html {
             background-color: #3289D1 !important;
@@ -73,13 +70,11 @@
     </style>
 </head>
 <body class="text-white flex items-start justify-center min-h-screen p-3.5 sm:p-4 pt-4">
-
     <div class="w-full max-w-md mx-auto bg-white rounded-2xl shadow-lg p-4 sm:p-5">
         <div class="text-center mb-3 sm:mb-4">
-            <h1 class="text-xl sm:text-2xl font-bold text-gray-800 tracking-tight">Verdünnungs-Rechner</h1>
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-800 tracking-tight">Verdünnungsrechner</h1>
             <p class="text-gray-500 text-xs sm:text-sm mt-0.5">Berechnet die Mengen von Verdünnungen</p>
         </div>
-
         <div class="space-y-3">
             <!-- Stoff-Auswahl -->
             <div>
@@ -97,7 +92,6 @@
                     <option value="other">Andere (manuelle Eingabe)</option>
                 </select>
             </div>
-
             <!-- Ausgangskonzentration & Dichte -->
             <div class="grid grid-cols-2 gap-2.5 sm:gap-3">
                 <div>
@@ -114,7 +108,6 @@
                     <input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="initial-density" placeholder="z.B. 0,786" class="w-full p-2 sm:p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 text-sm sm:text-base font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                 </div>
             </div>
-
             <!-- Zielkonzentration & Menge -->
             <div class="grid grid-cols-2 gap-2.5 sm:gap-3 pt-0.5">
                 <div>
@@ -135,27 +128,24 @@
                 </div>
             </div>
         </div>
-
         <div id="error-message" class="text-red-500 text-center text-xs sm:text-sm mt-3 font-semibold hidden">
             Bitte alle Felder korrekt ausfüllen. Die Ausgangskonzentration muss größer sein als die Zielkonzentration.
         </div>
-
         <!-- Ergebnis -->
         <div id="results-container" class="mt-4 pt-3.5 border-t border-gray-200 hidden">
             <h2 class="text-base sm:text-lg font-bold text-center text-gray-800 mb-2.5">Ergebnis</h2>
             <div class="grid grid-cols-1 gap-2.5">
                 <div class="bg-blue-50 p-3 rounded-xl flex flex-col items-center justify-center text-center">
-                    <span id="substance-label" class="text-sm sm:text-base font-semibold text-blue-900 mb-0.5">Ausgangslösung:</span>
-                    <span id="result-substance" class="text-base sm:text-lg font-medium text-blue-950"></span>
+                    <span id="substance-label" class="text-sm sm:text-base font-bold text-blue-900 mb-0.5">Ausgangslösung:</span>
+                    <span id="result-substance" class="text-base sm:text-lg font-bold text-blue-950"></span>
                 </div>
                 <div class="bg-green-50 p-3 rounded-xl flex flex-col items-center justify-center text-center">
-                    <span class="text-sm sm:text-base font-semibold text-green-900 mb-0.5">Wasser:</span>
-                    <span id="result-water" class="text-base sm:text-lg font-medium text-green-950"></span>
+                    <span class="text-sm sm:text-base font-bold text-green-900 mb-0.5">Wasser:</span>
+                    <span id="result-water" class="text-base sm:text-lg font-bold text-green-950"></span>
                 </div>
             </div>
         </div>
     </div>
-
     <script>
         const densities = {
             "aceton": 0.791,
@@ -187,7 +177,6 @@
                 const saved = localStorage.getItem('verduennungsrechner_data');
                 if (!saved) return;
                 const data = JSON.parse(saved);
-
                 if (data.substance !== undefined) {
                     document.getElementById('substance-select').value = data.substance;
                     if (data.substance in densities) {
@@ -211,7 +200,6 @@
                 if (data.finalVolumeUnit !== undefined) {
                     document.getElementById('final-volume-unit').value = data.finalVolumeUnit;
                 }
-
                 calculateSolution();
             } catch (e) {}
         }
@@ -232,7 +220,6 @@
         function handleInput(e) {
             let cursorPosition = e.target.selectionStart;
             let originalValue = e.target.value;
-
             let normalizedValue = originalValue.replace(/\./g, ',');
             let cleanValue = normalizedValue.replace(/[^0-9,]/g, '');
 
@@ -242,9 +229,11 @@
             }
 
             e.target.value = cleanValue;
+
             if (originalValue !== cleanValue) {
                 cursorPosition = cursorPosition + (cleanValue.length - originalValue.length);
             }
+
             try {
                 e.target.setSelectionRange(cursorPosition, cursorPosition);
             } catch (err) {}
@@ -290,6 +279,15 @@
             }
         }
 
+        function formatMass(massG) {
+            if (isNaN(massG)) return '...';
+            if (massG >= 1000) {
+                return formatToGermanString(massG / 1000, 2) + ' kg';
+            } else {
+                return formatToGermanString(massG, 2) + ' g';
+            }
+        }
+
         function formatInputOnBlur(event, decimals) {
             const input = event.target;
             const value = parseGermanFloat(input.value);
@@ -311,6 +309,7 @@
             const resultSubstance = document.getElementById('result-substance');
             const resultWater = document.getElementById('result-water');
             const errorMessage = document.getElementById('error-message');
+
             const substanceSelect = document.getElementById('substance-select');
             const substanceName = substanceSelect.value === 'default' || substanceSelect.value === 'other' ? 'Ausgangslösung' : substanceSelect.options[substanceSelect.selectedIndex].text;
 
@@ -347,6 +346,7 @@
                 }
                 initialNeededVolume = (finalVolumeMl * targetConcentration) / initialConcentration;
                 diluentNeededVolume = finalVolumeMl - initialNeededVolume;
+
                 initialNeededMass = initialNeededVolume * initialDensity;
                 diluentNeededMass = diluentNeededVolume * 1.0;
             } else {
@@ -356,16 +356,19 @@
                 }
                 initialNeededMass = (finalMassG * targetConcentration) / initialConcentration;
                 diluentNeededMass = finalMassG - initialNeededMass;
+
                 initialNeededVolume = initialNeededMass / initialDensity;
                 diluentNeededVolume = diluentNeededMass / 1.0;
             }
 
             const formattedInitialVolume = formatVolume(initialNeededVolume);
             const formattedDiluentVolume = formatVolume(diluentNeededVolume);
+            const formattedInitialMass = formatMass(initialNeededMass);
+            const formattedDiluentMass = formatMass(diluentNeededMass);
 
             substanceLabel.textContent = substanceName + ':';
-            resultSubstance.innerHTML = `${formatToGermanString(initialNeededMass, 2)} g <span class="font-normal text-blue-900">(${formattedInitialVolume})</span>`;
-            resultWater.innerHTML = `${formatToGermanString(diluentNeededMass, 2)} g <span class="font-normal text-green-900">(${formattedDiluentVolume})</span>`;
+            resultSubstance.innerHTML = `${formattedInitialMass} <span class="font-semibold text-blue-900">(${formattedInitialVolume})</span>`;
+            resultWater.innerHTML = `${formattedDiluentMass} <span class="font-semibold text-green-900">(${formattedDiluentVolume})</span>`;
 
             resultContainer.classList.remove('hidden');
         }
@@ -381,6 +384,7 @@
             saveFormData();
             calculateSolution();
         });
+
         document.getElementById('substance-select').addEventListener('change', autoFillDensityFromSelect);
 
         document.getElementById('initial-concentration').addEventListener('blur', (e) => formatInputOnBlur(e, 2));
